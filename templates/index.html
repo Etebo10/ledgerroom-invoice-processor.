@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f4ef"><meta name="description" content="Invoice and expense operations workspace">
+  <title>Ledgerroom — Invoice operations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="#overview" aria-label="Ledgerroom home"><span class="brand-mark"><i></i><i></i><i></i></span><span>ledgerroom<span class="brand-period">.</span></span></a>
+    <div class="workspace-label">WORKSPACE</div>
+    <nav class="main-nav" aria-label="Main navigation">
+      <button class="nav-link active" data-view="overview"><span class="nav-icon">◫</span><span>Overview</span></button>
+      <button class="nav-link" data-view="invoices"><span class="nav-icon">▤</span><span>All invoices</span><span class="nav-count" id="invoiceNavCount">0</span></button>
+      <button class="nav-link" data-view="review"><span class="nav-icon">◷</span><span>Review queue</span><span class="nav-count warm" id="reviewNavCount">0</span></button>
+      <button class="nav-link" data-view="vendors"><span class="nav-icon">⌘</span><span>Vendors</span></button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-note"><span class="note-dot"></span><div><strong>Processing engine</strong><small>Ready for documents</small></div></div>
+      <div class="profile"><div class="avatar">LR</div><div class="profile-copy"><strong id="companyName">Sample Co.</strong><small>Finance workspace</small></div><span class="profile-more">···</span></div>
+    </div>
+  </aside>
+
+  <main class="main-area">
+    <header class="topbar">
+      <div class="topbar-left"><button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button><div class="breadcrumb">Workspace <span>/</span> <strong id="crumb">Overview</strong></div></div>
+      <div class="topbar-actions"><span class="today-label" id="todayLabel"></span><button class="icon-button" id="refreshButton" title="Refresh data" aria-label="Refresh data">↻</button><button class="button button-dark button-small" id="openUpload"><span>＋</span> Add documents</button></div>
+    </header>
+
+    <section class="view active-view" id="view-overview">
+      <div class="page-heading"><div><div class="eyebrow">FINANCE OPERATIONS <span class="eyebrow-line"></span> <span id="periodLabel">LIVE WORKSPACE</span></div><h1>Good work starts<br class="mobile-break"> with <em>clarity.</em></h1><p class="page-subtitle">Your invoices, expenses and approvals — all in one considered place.</p></div><button class="button button-accent" id="heroUpload"><span>＋</span> Upload invoices</button></div>
+      <div class="metric-grid">
+        <article class="metric-card metric-primary"><div class="metric-top"><span class="metric-label">TOTAL SPEND TRACKED</span><span class="metric-icon">↗</span></div><div class="metric-value" id="metricSpend">—</div><div class="metric-foot"><span class="metric-caption">Across all recorded invoices</span><span class="metric-index">01</span></div><div class="metric-rule"></div></article>
+        <article class="metric-card"><div class="metric-top"><span class="metric-label">INVOICES PROCESSED</span><span class="metric-icon muted">▤</span></div><div class="metric-value" id="metricInvoices">—</div><div class="metric-foot"><span class="metric-caption">Documents in your ledger</span><span class="metric-index">02</span></div><div class="metric-rule"></div></article>
+        <article class="metric-card"><div class="metric-top"><span class="metric-label">AWAITING YOUR REVIEW</span><span class="metric-icon amber">◷</span></div><div class="metric-value" id="metricPending">—</div><div class="metric-foot"><span class="metric-caption">Items that need a decision</span><span class="metric-index">03</span></div><div class="metric-rule"></div></article>
+        <article class="metric-card"><div class="metric-top"><span class="metric-label">VENDORS ON RECORD</span><span class="metric-icon muted">⌘</span></div><div class="metric-value" id="metricVendors">—</div><div class="metric-foot"><span class="metric-caption">Distinct supplier profiles</span><span class="metric-index">04</span></div><div class="metric-rule"></div></article>
+      </div>
+
+      <div class="content-grid overview-grid">
+        <section class="panel spend-panel"><div class="panel-heading"><div><div class="eyebrow">THE BIG PICTURE</div><h2>Spend overview</h2></div><span class="panel-meta">BY INVOICE MONTH</span></div><div class="chart-summary"><strong id="chartTotal">—</strong><span>Recorded invoice value</span></div><div class="chart-wrap"><div class="chart-y-labels"><span>High</span><span>Mid</span><span>Low</span></div><div class="chart" id="spendChart"><div class="empty-chart">Your spend activity will appear here once invoices are processed.</div></div></div><div class="chart-legend"><span><i class="legend-dot"></i> Invoice value</span><span class="chart-footnote">Grouped by invoice date</span></div></section>
+        <section class="panel distribution-panel"><div class="panel-heading"><div><div class="eyebrow">DECISIONS AT A GLANCE</div><h2>Invoice status</h2></div><span class="panel-meta">ALL TIME</span></div><div class="donut-area"><div class="donut" id="statusDonut"><div class="donut-center"><strong id="donutTotal">0</strong><span>invoices</span></div></div><div class="status-legend" id="statusLegend"></div></div><div class="distribution-note"><span class="note-mark">↗</span><span>Every document is tracked from extraction through approval.</span></div></section>
+      </div>
+
+      <section class="panel recent-panel"><div class="panel-heading"><div><div class="eyebrow">THE LATEST ACTIVITY</div><h2>Recent invoices</h2></div><button class="text-link" data-go="invoices">View all invoices <span>↗</span></button></div><div class="table-wrap"><table class="data-table"><thead><tr><th>VENDOR / DOCUMENT</th><th>INVOICE DATE</th><th>AMOUNT</th><th>EXTRACTION</th><th>STATUS</th><th></th></tr></thead><tbody id="recentTable"><tr><td colspan="6" class="table-empty">Loading your invoice activity…</td></tr></tbody></table></div></section>
+    </section>
+
+    <section class="view" id="view-invoices">
+      <div class="page-heading compact-heading"><div><div class="eyebrow">YOUR RECORDS <span class="eyebrow-line"></span> DOCUMENT REGISTER</div><h1>All <em>invoices.</em></h1><p class="page-subtitle">A complete record of every document your team has processed.</p></div><button class="button button-accent" id="invoiceUpload"><span>＋</span> Add documents</button></div>
+      <section class="panel table-panel"><div class="toolbar"><div class="search-box"><span>⌕</span><input id="invoiceSearch" type="search" placeholder="Search vendor, invoice or file…" aria-label="Search invoices"></div><select id="statusFilter" class="filter-select" aria-label="Filter by status"><option value="all">All statuses</option><option value="pending">Needs review</option><option value="Auto-Approved">Auto-approved</option><option value="Needs Approval">Needs approval</option><option value="Flagged - Possible Duplicate">Duplicate</option><option value="Flagged - Unusual Amount">Unusual amount</option><option value="Needs Manual Review - Extraction Incomplete">Manual review</option></select><button class="button button-outline button-small" id="exportButton">↓ Export Excel</button></div><div class="table-wrap"><table class="data-table full-table"><thead><tr><th>VENDOR / DOCUMENT</th><th>INVOICE NO.</th><th>DATE</th><th>AMOUNT</th><th>METHOD</th><th>STATUS</th><th>REVIEW</th><th></th></tr></thead><tbody id="invoiceTable"><tr><td colspan="8" class="table-empty">Loading invoices…</td></tr></tbody></table></div><div class="table-bottom"><span id="invoiceCountLabel">0 invoices</span><span>Amounts shown in configured currency</span></div></section>
+    </section>
+
+    <section class="view" id="view-review">
+      <div class="page-heading compact-heading"><div><div class="eyebrow">HUMAN IN THE LOOP <span class="eyebrow-line"></span> APPROVAL DESK</div><h1>Worth a <em>closer look.</em></h1><p class="page-subtitle">Review the exceptions. Approve what checks out, reject what doesn't.</p></div><div class="queue-total"><strong id="queueTotal">0</strong><span>awaiting decision</span></div></div>
+      <div class="review-intro"><span class="review-symbol">✳</span><div><strong>Not everything should be automated.</strong><p>Items land here when an approval threshold, duplicate check, anomaly signal or extraction-confidence check needs a human decision.</p></div></div>
+      <div class="review-list" id="reviewList"><div class="panel empty-state"><div class="empty-illustration">✓</div><h3>All caught up.</h3><p>There are no invoices waiting for your review.</p></div></div>
+    </section>
+
+    <section class="view" id="view-vendors">
+      <div class="page-heading compact-heading"><div><div class="eyebrow">SUPPLIER INTELLIGENCE <span class="eyebrow-line"></span> RELATIONSHIPS</div><h1>Know who you <em>work with.</em></h1><p class="page-subtitle">A useful picture of supplier spend, invoice patterns and risk signals.</p></div></div>
+      <div class="vendor-summary-grid"><article class="mini-stat"><span>SUPPLIERS TRACKED</span><strong id="vendorCount">0</strong></article><article class="mini-stat"><span>COMBINED SPEND</span><strong id="vendorSpend">—</strong></article><article class="mini-stat"><span>SUPPLIERS WITH SIGNALS</span><strong id="vendorRisks">0</strong></article></div>
+      <section class="panel vendor-panel"><div class="panel-heading"><div><div class="eyebrow">SUPPLIER REGISTER</div><h2>Vendor profiles</h2></div><span class="panel-meta">RANKED BY TOTAL SPEND</span></div><div class="vendor-list" id="vendorList"><div class="table-empty">Vendor profiles will appear here after processing.</div></div></section>
+    </section>
+
+    <footer class="footer"><span>LEDGERROOM <i>·</i> INVOICE OPERATIONS</span><span>Make the paperwork make sense.</span></footer>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="uploadModal" aria-hidden="true"><section class="upload-modal" role="dialog" aria-modal="true" aria-labelledby="uploadTitle"><div class="modal-top"><div><div class="eyebrow">DOCUMENT INTAKE</div><h2 id="uploadTitle">Bring it <em>in.</em></h2><p>Drop your invoices and receipts. We'll take it from here.</p></div><button class="close-button" id="closeUpload" aria-label="Close">×</button></div><form id="uploadForm"><label class="drop-zone" id="dropZone" for="fileInput"><input id="fileInput" name="files" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.tiff,.bmp" hidden><span class="upload-symbol">↑</span><strong>Drop documents here</strong><span>or <u>browse files</u> from your computer</span><small>PDF, JPG, PNG, TIFF or BMP · Up to 25 MB combined</small></label><div class="selected-files" id="selectedFiles"></div><div class="upload-progress" id="uploadProgress"><div class="progress-bar"><i></i></div><span>Reading documents and applying your rules…</span></div><div class="upload-error" id="uploadError"></div><div class="modal-actions"><span>Files are processed by the Python invoice engine.</span><button class="button button-dark" type="submit" id="processButton" disabled>Process documents <span>→</span></button></div></form></section></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body></html>

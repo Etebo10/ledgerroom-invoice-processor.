@@ -1,0 +1,68 @@
+# =============================================================================
+# Invoice & Expense Processor — Configuration
+# =============================================================================
+
+company:
+  name: "Sample Co."
+
+# -----------------------------------------------------------------------------
+# Where documents come from / go to
+# -----------------------------------------------------------------------------
+paths:
+  inbox_dir: "data/inbox"          # drop new invoices/receipts here (.pdf, .jpg, .png)
+  processed_dir: "data/processed"   # files are moved here after successful processing
+  failed_dir: "data/failed"          # files that couldn't be read/parsed land here for manual review
+  database_path: "data/invoices.db"
+  excel_log_path: "output/expense_log.xlsx"
+
+# -----------------------------------------------------------------------------
+# Approval routing rules
+# -----------------------------------------------------------------------------
+approval:
+  auto_approve_under: 3500.00     # amounts strictly below this are auto-approved
+  currency_symbol: "$"
+
+  # Duplicate detection: same vendor + same amount within this many days
+  # is flagged as a likely duplicate submission.
+  duplicate_window_days: 30
+
+  # Anomaly detection: flags an invoice if its amount is more than this many
+  # standard deviations above that vendor's historical average. Requires at
+  # least `anomaly_min_history` prior invoices from the same vendor to judge.
+  anomaly_zscore_threshold: 2.5
+  anomaly_min_history: 3
+
+# -----------------------------------------------------------------------------
+# OCR settings
+# -----------------------------------------------------------------------------
+ocr:
+  dpi: 300                # resolution used when rasterizing PDFs/images for OCR
+  language: "eng"
+  # Optional on Windows if Tesseract is not on PATH.
+  tesseract_cmd: null
+
+# -----------------------------------------------------------------------------
+# Sample document generator
+# -----------------------------------------------------------------------------
+sample_data:
+  num_invoices: 12
+  vendors:
+    - "Acme Office Supplies"
+    - "Blue Ridge Logistics"
+    - "Northstar Consulting"
+    - "Metro Print & Design"
+    - "Skyline Software Inc."
+  seed: null
+
+# -----------------------------------------------------------------------------
+# Email delivery of pending-approval summary
+# -----------------------------------------------------------------------------
+email:
+  enabled: false
+  recipients:
+    - "finance-approver@example.com"
+  subject_template: "{count} expense(s) awaiting approval — {date}"
+
+logging:
+  level: "INFO"
+  file: "logs/pipeline.log"

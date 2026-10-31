@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+data/inbox/*.pdf
+data/inbox/*.jpg
+data/inbox/*.png
+data/processed/*
+data/failed/*
+data/*.db
+output/*.xlsx
+logs/*.log
+.venv/
+venv/
+*.egg-info/
